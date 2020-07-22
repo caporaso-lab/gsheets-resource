@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+echo "Out is not supported by this resource."
+exit 1

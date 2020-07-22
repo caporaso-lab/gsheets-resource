@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import json
+
+from googleapiclient.errors import HttpError
+
+import common
+
+
+def _make_display_link(file_id, rev_key, rev_id):
+    return (f'https://docs.google.com/spreadsheets/u/0/d/{file_id}/notify/show'
+            f'?s={rev_key}&rev={rev_id}&fromRev={rev_id}')
+
+
+def main(file_id, rev_key, credentials, version, params, dest):
+    service = common.get_service(credentials)
+    request = \
+        service.revisions().get(fileId=file_id, revisionId=version['id'])
+
+    try:
+        revision = request.execute()
+    except HttpError as e:
+        if '"code": 404' in str(e.content):
+            raise ValueError('Could not find revision matching version'
+                             f' {version["id"]}') from e
+
+    link = revision['exportLinks']['text/tab-separated-values']
+    last_editor = revision['lastModifyingUserName']
+    filename = f'metadata_revision{version["id"]}.tsv'
+    response = common._idunno(credentials, link)
+    print(response.headers['Content-Disposition'].split(';')[1])
+
+    with open(os.path.join(dest, filename), 'w') as fh:
+        fh.write(response.text)
+
+    return {'version': version,
+            'metadata': [
+                {'name': 'last editor', 'value': last_editor},
+                {'name': 'link',
+                 'value': _make_display_link(file_id, rev_key, version['id'])}
+            ]}
+
+
+if __name__ == '__main__':
+    options = json.load(sys.stdin)
+    response = main(**options['source'], version=options['version'],
+                    params=options.get('params', {}), dest=sys.argv[1])
+    print(json.dumps(response))

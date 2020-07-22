@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+
+import sys
+import json
+
+import common
+
+
+def main(file_id, rev_key, credentials, version):
+    service = common.get_service(credentials)
+    revs = service.revisions().list(fileId=file_id).execute()['items']
+    for rev in revs:
+        print(rev)
+        print()
+
+    if version is not None:
+        # We need to make sure the requested version exists but we don't need
+        # to save it for anything yet
+        for rev in revs:
+            if rev['id'] == version['id']:
+                break
+        else:
+            raise ValueError('Could not find revision matching version'
+                             f' {version["id"]}')
+
+        version = int(version['id'])
+        versions = [rev for rev in revs if int(rev['id']) >= version]
+        versions = sorted(versions, key=lambda rev: int(rev['id']))
+    else:
+        versions = [sorted(revs, key=lambda rev: int(rev['id']))[-1]]
+
+    return [{'id': v['id']} for v in versions]
+
+
+if __name__ == '__main__':
+    options = json.load(sys.stdin)
+    response = main(**options['source'], version=options.get('version'))
+    print(json.dumps(response))
