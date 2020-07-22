@@ -30,7 +30,6 @@ def main(file_id, rev_key, credentials, version, params, dest):
     last_editor = revision['lastModifyingUserName']
     filename = f'metadata_revision{version["id"]}.tsv'
     response = common._idunno(credentials, link)
-    print(response.headers['Content-Disposition'].split(';')[1])
 
     with open(os.path.join(dest, filename), 'w') as fh:
         fh.write(response.text)
