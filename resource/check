@@ -31,5 +31,6 @@ def main(file_id, rev_key, credentials, version):
 
 if __name__ == '__main__':
     options = json.load(sys.stdin)
-    response = main(**options['source'], version=options.get('version'))
+    response = main(**common.get_opts(options['source']),
+                    version=options.get('version'))
     print(json.dumps(response))
