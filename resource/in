@@ -44,7 +44,6 @@ def main(file_id, rev_key, credentials, version, params, dest):
 
 if __name__ == '__main__':
     options = json.load(sys.stdin)
-    response = main(**common.get_opts(options['source']),
-                    version=options['version'],
+    response = main(**options['source'], version=options['version'],
                     params=options.get('params', {}), dest=sys.argv[1])
     print(json.dumps(response))
