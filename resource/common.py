@@ -15,7 +15,7 @@ def get_service(credentials):
     return service
 
 
-def _idunno(credentials, tsv_download):
+def get_file(credentials, tsv_download):
     credentials = \
         service_account.Credentials.from_service_account_info(credentials)
 
