@@ -9,9 +9,6 @@ import common
 def main(file_id, rev_key, credentials, version):
     service = common.get_service(credentials)
     revs = service.revisions().list(fileId=file_id).execute()['items']
-    for rev in revs:
-        print(rev)
-        print()
 
     if version is not None:
         # We need to make sure the requested version exists but we don't need
