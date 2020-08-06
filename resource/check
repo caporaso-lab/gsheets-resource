@@ -11,15 +11,6 @@ def main(file_id, rev_key, credentials, version):
     revs = service.revisions().list(fileId=file_id).execute()['items']
 
     if version is not None:
-        # We need to make sure the requested version exists but we don't need
-        # to save it for anything yet
-        for rev in revs:
-            if rev['id'] == version['id']:
-                break
-        else:
-            raise ValueError('Could not find revision matching version'
-                             f' {version["id"]}')
-
         version = int(version['id'])
         versions = [rev for rev in revs if int(rev['id']) >= version]
         versions = sorted(versions, key=lambda rev: int(rev['id']))
