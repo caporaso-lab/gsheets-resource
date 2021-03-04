@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3
+FROM quay.io/qiime2/miniconda3
 ADD resource/ /opt/resource/
 RUN conda update conda -y
 RUN conda install -c conda-forge google-auth -y
